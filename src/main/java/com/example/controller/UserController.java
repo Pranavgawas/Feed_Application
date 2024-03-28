@@ -1,8 +1,9 @@
 package com.example.controller;
-
+ 
 import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.access.prepost.PreAuthorize;
 //import org.springframework.security.authentication.AuthenticationManager;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 //import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,11 +48,24 @@ public class UserController {
 		return userManager.validateUser(user);
     }	
 	
-//	@PostMapping(value="api/isAdmin")
-//	 public boolean isAdmin(@RequestBody User user) {
-//	        // Implement your logic to check if the user is an admin
-//	        return userManager.isAdminOrNot(user);
-//	    }
+	@GetMapping(value = "api/current-user")
+	public String getLoggedInUser(Principal principal) {
+		return principal.getName();
+	}
+    @PostMapping(value="/api/login/isAdmin")
+    public boolean checkAdmin(@RequestBody User user) {
+        if (userManager.validateAdmin(user)) {
+            return true;
+        } else { 
+            return false;
+        }
+    }
+    
+    @GetMapping(value="/api/user/getuserid/{username}")
+    public Long getUserIdByUsername(@PathVariable String username) {
+        return userManager.getUserIdByUsername(username);
+    }
+
 	
 //	@GetMapping("api/current-user")
 //	public ResponseEntity<Integer> getCurrentUserId(HttpServletRequest request) {

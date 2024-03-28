@@ -3,20 +3,25 @@ package com.example.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.example.entities.Post;
+import com.example.entities.User;
 import com.example.repository.AllPostRepo;
+import com.example.repository.UserRepository;
 
 @Service
 public class AllPostManagerImpl implements AllPostManager {
 
     @Autowired
     private AllPostRepo getall;
+    
+
 
     @Override
     public List<Post> getAllPost() {
-        return getall.findAll();
+        return getall.getUnApprovedPost();
     } 
 
     @Override
@@ -26,13 +31,14 @@ public class AllPostManagerImpl implements AllPostManager {
 
     @Override
     public List<Post> getOtherPost(int user_id) {
-        return getall.findAllByUserNot(user_id);
+        return getall.findAllByUserNotAndApproved(user_id);
     }
 
     @Override
-    public void addPost(Post post) {
-        getall.save(post);
+    public void addPost(String post, int user_id) {
+        getall.addMyPost(post, user_id);
     }
+
 
     @Override
     public void deleteById(int post_id) {
@@ -40,14 +46,13 @@ public class AllPostManagerImpl implements AllPostManager {
     }
 
     @Override
-    public void updateById(int post_id, Post post) {
-        Post existingPost = getall.findById(post_id).orElse(null);
-        if (existingPost != null) {
-            existingPost.setPost(post.getPost());
-            existingPost.setDate(post.getDate());
-            // Update any other fields as needed
-            getall.save(existingPost);
-        }
+    public void updateById(int post_id, String post) {
+        getall.updateMyPost(post_id, post);
+    }
+ 
+    @Override
+    public void approvePost(Long postId) {
+    	getall.approvePost(postId);
     }
 
 }

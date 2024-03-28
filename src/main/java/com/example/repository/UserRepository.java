@@ -14,10 +14,14 @@ import jakarta.transaction.Transactional;
 @Repository
 @Transactional
 public interface UserRepository extends JpaRepository<User, Integer> {
-    @Query("SELECT count(u)>0 FROM User u WHERE u.username = :username AND u.password = :password")
+    @Query("SELECT count(u)>0 FROM User u WHERE u.username = :username AND u.password = :password AND u.role <> 'admin'")
     boolean validateUser(@Param("username") String username, @Param("password") String password);
 
-//    Optional<User> findByUsername(String username);
+    @Query("SELECT COUNT(u) > 0 FROM User u WHERE u.username = :username AND u.password = :password AND u.role = 'admin'")
+    boolean validateAdmin(@Param("username") String username, @Param("password") String password);
+
+    @Query("SELECT u.id FROM User u WHERE u.username = :username")
+    Long getUserIdByUsername(@Param("username") String username);
     
 //    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN TRUE ELSE FALSE END FROM User u WHERE u.id = :userId AND u.role = 'admin'")
 //    boolean isAdmin( int user_id, String role);
